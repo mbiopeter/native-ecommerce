@@ -3,12 +3,32 @@ import React, { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
+import { serverUrl } from '../const';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+
+    const handleLogin = () => {
+        const user = {
+            email: email,
+            password: password
+        }
+        //send the post request to the backend API
+        axios.post(`${serverUrl}/login`, user).then((response) => {
+            const token = response.data.token;
+            AsyncStorage.setItem("authToken", token);
+            navigation.replace("Main");
+        }).catch((error) => {
+            Alert.alert("Login error!");
+            console.log('Login error', error);
+        })
+    }
     return (
+
         <SafeAreaView
             style={{
                 flex: 1,
@@ -64,7 +84,7 @@ const LoginScreen = () => {
                             }} />
                         <TextInput
                             value={email}
-                            onChange={(text) => setEmail(text)}
+                            onChangeText={(text) => setEmail(text)}
                             placeholder="Enter your Email"
                             style={{
                                 color: 'gray',
@@ -98,7 +118,7 @@ const LoginScreen = () => {
                             }} />
                         <TextInput
                             value={password}
-                            onChange={(text) => setPassword(text)}
+                            onChangeText={(text) => setPassword(text)}
                             secureTextEntry={true}
                             placeholder="Enter your Password"
                             style={{
@@ -130,6 +150,7 @@ const LoginScreen = () => {
 
                 {/* login btn */}
                 <Pressable
+                    onPress={handleLogin}
                     style={{
                         width: 200,
                         backgroundColor: '#FEBE10',

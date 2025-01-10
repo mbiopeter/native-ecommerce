@@ -1,15 +1,36 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView, TextInput, Pressable, Alert } from 'react-native';
 import React, { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import axios from 'axios';
+import { serverUrl } from '../const';
 
 const RegisterScreen = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+
+    const handleRegister = () => {
+        const user = {
+            name: name,
+            email: email,
+            password: password,
+        }
+        //send the post request to the backend API
+        axios.post(`${serverUrl}/register`, user).then((response) => {
+            Alert.alert("Registration successfull!");
+            setName("");
+            setEmail("");
+            setPassword("");
+        }).catch((error) => {
+            Alert.alert("Registration error!");
+            console.log('registration error', error);
+        })
+
+    }
     return (
         <SafeAreaView
             style={{
@@ -66,7 +87,7 @@ const RegisterScreen = () => {
                             }} />
                         <TextInput
                             value={name}
-                            onChange={(text) => setName(text)}
+                            onChangeText={(text) => setName(text)}
                             placeholder="Enter your name"
                             style={{
                                 color: 'gray',
@@ -100,7 +121,7 @@ const RegisterScreen = () => {
                             }} />
                         <TextInput
                             value={email}
-                            onChange={(text) => setEmail(text)}
+                            onChangeText={(text) => setEmail(text)}
                             placeholder="Enter your Email"
                             style={{
                                 color: 'gray',
@@ -134,7 +155,7 @@ const RegisterScreen = () => {
                             }} />
                         <TextInput
                             value={password}
-                            onChange={(text) => setPassword(text)}
+                            onChangeText={(text) => setPassword(text)}
                             secureTextEntry={true}
                             placeholder="Enter your Password"
                             style={{
@@ -166,6 +187,7 @@ const RegisterScreen = () => {
 
                 {/* login btn */}
                 <Pressable
+                    onPress={handleRegister}
                     style={{
                         width: 200,
                         backgroundColor: '#FEBE10',
